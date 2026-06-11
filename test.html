@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Flux Test</title></head>
+<body style="font-family: sans-serif; background: #121212; color: white; padding: 20px;">
+    <h2>Flux WebSocket Tester</h2>
+    <input id="userId" placeholder="Enter your User ID (e.g., bob_123)" />
+    <button onclick="connect()">Connect</button>
+    <br><br>
+    <input id="jsonInput" style="width: 400px;" placeholder='{"action": "invite_friend", "target_id": "alice_456"}' />
+    <button onclick="sendMsg()">Send JSON</button>
+    
+    <ul id="messages" style="background: #222; padding: 10px; border-radius: 5px; min-height: 200px;"></ul>
+
+    <script>
+        let ws;
+        function connect() {
+            const id = document.getElementById("userId").value;
+            ws = new WebSocket("ws://localhost:8080/ws?user_id=" + id);
+            ws.onopen = () => log("🟢 Connected as " + id);
+            ws.onmessage = (e) => log("📩 Received: " + e.data);
+            ws.onclose = () => log("🔴 Disconnected");
+        }
+        function sendMsg() {
+            const msg = document.getElementById("jsonInput").value;
+            ws.send(msg);
+            log("📤 Sent: " + msg);
+        }
+        function log(text) {
+            const li = document.createElement("li");
+            li.innerText = text;
+            document.getElementById("messages").prepend(li);
+        }
+    </script>
+</body>
+</html>
